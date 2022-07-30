@@ -14,7 +14,7 @@ url = FIRST
 VISITED = Set.new
 TMP = "/Volumes/RAM/page"
 #TMP = "page"
-THREADS = []
+RACTORS = []
 
 def image(index, url)
   xpath = %(//div[@id="comic"][1]//img/@src)
@@ -54,7 +54,7 @@ def download_image(src, dest)
   if File.exists?(dest)
     puts "Image #{dest}: already exists"
   else
-    THREADS << Thread.new do
+    RACTORS << Ractor.new(src, dest) do |src, dest|
       puts "Image #{dest}: #{src}"
       curl(src, dest)
     end
@@ -75,6 +75,6 @@ loop do
 end
 
 puts "Waiting for all downloads to finish..."
-THREADS.each(&:join)
+RACTORS.each(&:take)
 
 system %(zip -r #{TITLE}.cbz #{TITLE})
